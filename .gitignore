@@ -1,0 +1,38 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv environment variables
+.env
+.env.*
+
+# Application files/logs
+logs
+*.log
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
+
+# VSCode settings
+.vscode/
+
+# Testing
+coverage/
+.nyc_output/
+
+# PM2 logs
+pids/
+logs/
+pids.log
+
