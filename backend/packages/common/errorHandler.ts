@@ -10,7 +10,7 @@ export class AppError extends Error {
 export function errorHandler(err: any, req: any, res: any, next: any, NODE_ENV: string) {
     const status = err instanceof AppError ? err.statusCode : 500;
     const message = err instanceof AppError ? err.message : 'Internal server error';
-    console.log("Error Handler running for error: ");
+
     res.status(status).json({
         error: {
             message,
