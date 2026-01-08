@@ -10,6 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-init()
-
+(async () => {
+    await init();
+})();
 export default app;

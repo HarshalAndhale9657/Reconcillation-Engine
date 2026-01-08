@@ -77,7 +77,9 @@ export class KafkaManager {
     }
     async initializeProducer(topic: string, data: any) {
         try {
+            console.log(data)
             const msg: Message = {
+                key:data.transaction_id,
                 value: JSON.stringify(data)
             }
             await this.producer.send({
