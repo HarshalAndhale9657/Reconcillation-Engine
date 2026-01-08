@@ -1,18 +1,17 @@
 import { produceMessage } from "@backend/common";
 
-const logPayment = async () => {
+export const logGatewayTx = async () => {
     let count = 0
     setInterval(async () => {
         const event = {
             transaction_id: `TX${count}`,
-            source: "APP",
+            source: "GATEWAY",
             amount: 1000,
             status: "PENDING",
             timestamp: new Date().toISOString()
         };
-        await produceMessage(event)
+        await produceMessage(event, 'GATEWAY')
         count++;
-    }, 5000)
+    }, 30000)
 }
 
-logPayment()

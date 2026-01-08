@@ -6,10 +6,19 @@ const kafkaManager = new KafkaManager(kafkaConfig);
 export const init = async () => {
     // Admin operations
     await kafkaManager.connectAdmin();
-    await kafkaManager.createTopics([{ topic: 'BANK_STATEMENT', numPartitions: 2, replicationFactor: 1 }]);
-    await kafkaManager.connectProducer();
+    await kafkaManager.createTopics([
+        { topic: 'BANK', numPartitions: 2, replicationFactor: 1 },
+        { topic: 'GATEWAY', numPartitions: 2, replicationFactor: 1 },
+        { topic: 'APP', numPartitions: 2, replicationFactor: 1 }
+    ]);
 
-    await consumeMessages("BANK_STATEMENT", '1')
+
+    // await kafkaManager.deleteTopics([
+    //     'BANK',
+    //     'GATEWAY',
+    //     'APP'
+    // ])
+    await kafkaManager.connectProducer();
 };
 let producerConnected = false;
 
@@ -20,9 +29,9 @@ export const connectProducer = async () => {
     }
 
 }
-export const produceMessage = async (data: any) => {
+export const produceMessage = async (data: any, topic: 'BANK' | 'GATEWAY' | 'APP') => {
     await connectProducer()
-    await kafkaManager.initializeProducer('BANK_STATEMENT', data);
+    await kafkaManager.initializeProducer(topic, data);
 
 };
 export const consumeMessages = async (topic: string, groupId: string) => {
