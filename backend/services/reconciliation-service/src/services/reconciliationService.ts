@@ -2,6 +2,7 @@ import { KafkaManager } from "@backend/common";
 import { EachMessagePayload, KafkaConfig } from "kafkajs";
 import { TransactionSource, ReconciliationStatus, TransactionStatus, AlertSeverity } from "../../generated/prisma/enums";
 import { prisma } from '../../prisma/prisma'
+import { eventService } from './eventService';
 const REQUIRED_SOURCES: TransactionSource[] = [TransactionSource.APP, TransactionSource.BANK, TransactionSource.GATEWAY];
 const RECONCILIATION_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -62,6 +63,8 @@ class ReconciliationService {
                 await this.handleTransaction(transactionData, source);
             } catch (error) {
                 console.error(`Error processing message from topic ${topics}:`, error);
+                const transactionId = payload.message.value ? JSON.parse(payload.message.value.toString()).transaction_id : 'unknown';
+                eventService.emitError(transactionId, `Error processing message: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
         };
 
@@ -100,7 +103,7 @@ class ReconciliationService {
 
     private async storeRawTransaction(data: TransactionData, source: TransactionSource) {
         try {
-            await prisma.transactionRaw.upsert({
+            const rawTransaction = await prisma.transactionRaw.upsert({
                 where: {
                     transactionId_source: {
                         transactionId: data.transaction_id,
@@ -120,8 +123,18 @@ class ReconciliationService {
                     eventTimestamp: new Date(data.timestamp),
                 }
             });
+
+            // Emit event for new raw transaction
+            eventService.emitRawTransactionAdded(data.transaction_id, source, {
+                id: rawTransaction.id,
+                amount: rawTransaction.amount,
+                status: rawTransaction.status,
+                eventTimestamp: rawTransaction.eventTimestamp,
+                receivedAt: rawTransaction.receivedAt
+            });
         } catch (error) {
             console.error(`Error storing raw transaction ${data.transaction_id} from ${source}:`, error);
+            eventService.emitError(data.transaction_id, `Error storing raw transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 
@@ -190,6 +203,11 @@ class ReconciliationService {
 
         if (reconciliationResult.status !== ReconciliationStatus.MATCHED) {
             await this.createAlerts(transactionId, reconciliationResult);
+            // Emit failed event
+            eventService.emitTransactionFailed(transactionId, reconciliationResult.status, reconciliationResult.details);
+        } else {
+            // Emit matched event
+            eventService.emitTransactionMatched(transactionId, reconciliationResult.status, reconciliationResult.details);
         }
 
         this.pendingTransactions.delete(transactionId);
@@ -304,6 +322,8 @@ class ReconciliationService {
             details: `Timeout: Missing sources: ${missingSources.join(', ')}`
         });
 
+        // Emit timeout event
+        eventService.emitTransactionTimeout(transactionId, `Timeout: Missing sources: ${missingSources.join(', ')}`);
 
         this.pendingTransactions.delete(transactionId);
     }
