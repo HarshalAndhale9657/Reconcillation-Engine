@@ -2,7 +2,7 @@ import express from 'express';
 import { prisma } from '../../prisma/prisma';
 import { ReconciliationStatus, TransactionSource } from '../../generated/prisma/enums';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 // Get all matched transactions
 router.get('/transactions/matched', async (req: express.Request, res: express.Response) => {

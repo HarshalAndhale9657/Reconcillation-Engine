@@ -1,7 +1,11 @@
 import { EachMessagePayload, KafkaConfig } from 'kafkajs';
 import { KafkaManager } from './KafkaManager'
 
-const kafkaConfig: KafkaConfig = { clientId: 'ingestion-service', brokers: ['localhost:9092'] };
+const kafkaBrokers = process.env.KAFKA_BROKERS || 'localhost:9092';
+const kafkaConfig: KafkaConfig = { 
+    clientId: process.env.KAFKA_CLIENT_ID || 'ingestion-service', 
+    brokers: kafkaBrokers.split(',') 
+};
 const kafkaManager = new KafkaManager(kafkaConfig);
 export const init = async () => {
     // Admin operations

@@ -1,8 +1,14 @@
 import { produceMessage } from "@backend/common";
 
-export const logAppTx = async () => {
-    let count = 0
-    setInterval(async () => {
+let appTxInterval: NodeJS.Timeout | null = null;
+let count = 0;
+
+export const logAppTx = async (): Promise<NodeJS.Timeout> => {
+    if (appTxInterval) {
+        return appTxInterval; // Already running
+    }
+    
+    appTxInterval = setInterval(async () => {
         const event = {
             transaction_id: `TX${count}`,
             source: "APP",
@@ -12,6 +18,16 @@ export const logAppTx = async () => {
         };
         await produceMessage(event, 'APP')
         count++;
-    }, 30000)
+    }, 30000);
+    
+    return appTxInterval;
+}
+
+export const stopAppTx = () => {
+    if (appTxInterval) {
+        clearInterval(appTxInterval);
+        appTxInterval = null;
+        count = 0;
+    }
 }
 
