@@ -34,7 +34,7 @@ export const produceMessage = async (data: any, topic: 'BANK' | 'GATEWAY' | 'APP
     await kafkaManager.initializeProducer(topic, data);
 
 };
-export const consumeMessages = async (topic: string, groupId: string) => {
+export const consumeMessages = async (topics: string[], groupId: string) => {
     const eachMessageHandler = async (payload: EachMessagePayload) => {
         const { topic, partition, message } = payload;
         console.log({
@@ -44,7 +44,7 @@ export const consumeMessages = async (topic: string, groupId: string) => {
             value: message.value?.toString(),
         });
     };
-    await kafkaManager.initializeConsumer(topic, groupId, eachMessageHandler);
+    await kafkaManager.initializeConsumer(topics, groupId, eachMessageHandler);
 }
 
 export const disconnectKafka = async () => {

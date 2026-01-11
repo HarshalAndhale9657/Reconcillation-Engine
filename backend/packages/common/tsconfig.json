@@ -11,7 +11,7 @@
     "declarationMap": true,
     "types": ["node"]
   },
-  "include": ["*.ts", "prisma/**/*"],
+  "include": ["*.ts"],
   "exclude": ["node_modules", "dist"]
 }
 

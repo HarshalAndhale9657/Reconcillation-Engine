@@ -1,14 +1,16 @@
-import { Kafka, AdminConfig, Producer, ProducerConfig, KafkaConfig, Admin, ITopicConfig, ConsumerConfig, EachMessagePayload, Message } from "kafkajs";
+import { Kafka, AdminConfig, Producer, ProducerConfig, KafkaConfig, Admin, ITopicConfig, ConsumerConfig, EachMessagePayload, Message, Consumer } from "kafkajs";
 
 export class KafkaManager {
     private kafka: Kafka;
     private admin: Admin;
     private producer: Producer;
-    private consumers: Map<string, any> = new Map();
+    private consumer: Consumer | undefined;
+
     constructor(kafkaConfig: KafkaConfig, adminConfig?: AdminConfig) {
         this.kafka = new Kafka(kafkaConfig);
         this.admin = this.kafka.admin(adminConfig);
         this.producer = this.kafka.producer();
+        // Note: consumer is not initialized here
     }
 
     async connectAdmin() {
@@ -79,7 +81,7 @@ export class KafkaManager {
         try {
             console.log(data)
             const msg: Message = {
-                key:data.transaction_id,
+                key: data.transaction_id,
                 value: JSON.stringify(data)
             }
             await this.producer.send({
@@ -101,33 +103,34 @@ export class KafkaManager {
         }
     }
 
-    async initializeConsumer(topic: string, groupId: string, eachMessageHandler: (payload: EachMessagePayload) => Promise<void>) {
+    async initializeConsumer(topics: string[], groupId: string, eachMessageHandler: (payload: EachMessagePayload) => Promise<void>) {
         try {
             const consumerConfig: ConsumerConfig = { groupId: groupId }
             const consumer = this.kafka.consumer(consumerConfig);
-            console.log(`Connecting Kafka consumer for topic: ${topic}`)
+            console.log(`Connecting Kafka consumer`)
             await consumer.connect()
-            console.log(`Kafka consumer connected for topic: ${topic}`);
-            await consumer.subscribe({ topic, fromBeginning: true });
-            console.log(`Subscribed to topic ${topic}`);
+            console.log(`Kafka consumer connected`);
+            for (const topic of topics) {
+                await consumer.subscribe({ topic });
+            }
+
             await consumer.run({
                 eachMessage: async (payload) => {
                     await eachMessageHandler(payload);
                 },
             });
-            this.consumers.set(topic, consumer);
+            this.consumer = consumer;
         } catch (error) {
             console.error('Failed to initialize Kafka consumer:', error);
         }
     }
     async disconnectConsumer(topic: string) {
-        const consumer = this.consumers.get(topic);
-        if (consumer) {
+        if (this.consumer) {
             try {
                 console.log(`Disconnecting Kafka consumer for topic: ${topic}`);
-                await consumer.disconnect();
+                await this.consumer.disconnect();
                 console.log(`Kafka consumer disconnected for topic: ${topic}`);
-                this.consumers.delete(topic); // Remove the consumer from the map
+                this.consumer = undefined; // Clear the consumer reference
             } catch (error) {
                 console.error(`Failed to disconnect Kafka consumer for topic: ${topic}`, error);
             }

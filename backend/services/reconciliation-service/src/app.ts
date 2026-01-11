@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { AppError, errorHandler, prisma } from "@backend/common";
+import { AppError, errorHandler } from "@backend/common";
 import { NODE_ENV } from "./config/constants";
 
 dotenv.config();
