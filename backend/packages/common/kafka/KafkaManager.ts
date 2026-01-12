@@ -124,18 +124,12 @@ export class KafkaManager {
             console.error('Failed to initialize Kafka consumer:', error);
         }
     }
-    async disconnectConsumer(topic: string) {
-        if (this.consumer) {
-            try {
-                console.log(`Disconnecting Kafka consumer for topic: ${topic}`);
-                await this.consumer.disconnect();
-                console.log(`Kafka consumer disconnected for topic: ${topic}`);
-                this.consumer = undefined; // Clear the consumer reference
-            } catch (error) {
-                console.error(`Failed to disconnect Kafka consumer for topic: ${topic}`, error);
-            }
-        } else {
-            console.log(`No consumer found for topic: ${topic}`);
-        }
+    async disconnectConsumer() {
+        if (!this.consumer) return;
+
+        console.log(`Disconnecting Kafka consumer`);
+        await this.consumer.disconnect();
+        this.consumer = undefined;
+        console.log(`Kafka consumer disconnected`);
     }
 }

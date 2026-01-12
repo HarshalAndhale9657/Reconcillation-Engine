@@ -353,17 +353,11 @@ class ReconciliationService {
     async shutdown() {
         console.log('Shutting down reconciliation service...');
 
-
         for (const pending of this.pendingTransactions.values()) {
-            if (pending.timeoutId) {
-                clearTimeout(pending.timeoutId);
-            }
+            if (pending.timeoutId) clearTimeout(pending.timeoutId);
         }
 
-        await this.kafkaManager.disconnectConsumer('APP');
-        await this.kafkaManager.disconnectConsumer('BANK');
-        await this.kafkaManager.disconnectConsumer('GATEWAY');
-
+        await this.kafkaManager.disconnectConsumer();
         await this.kafkaManager.disconnectAdmin();
 
         console.log('Reconciliation service shut down');

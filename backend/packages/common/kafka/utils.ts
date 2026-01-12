@@ -54,5 +54,5 @@ export const consumeMessages = async (topics: string[], groupId: string) => {
 export const disconnectKafka = async () => {
     await kafkaManager.disconnectAdmin();
     await kafkaManager.disconnectProducer();
-    await kafkaManager.disconnectConsumer('topic-name');
+    await kafkaManager.disconnectConsumer();
 }

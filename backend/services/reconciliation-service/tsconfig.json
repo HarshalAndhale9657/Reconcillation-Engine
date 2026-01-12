@@ -2,20 +2,15 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
+    "rootDir": ".",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
-    "resolveJsonModule": true,
-    "types": ["node"],
-    "baseUrl": ".",
-    "paths": {
-      "@backend/common": ["../packages/common/src"]
-    }
+    "types": ["node"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "generated", "prisma"]
+  "include": ["*.ts", "prisma/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
-
