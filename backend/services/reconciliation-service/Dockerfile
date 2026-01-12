@@ -58,4 +58,4 @@ WORKDIR /app/services/reconciliation-service
 EXPOSE 3001
 
 # Start the service
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/src/server.js"]
