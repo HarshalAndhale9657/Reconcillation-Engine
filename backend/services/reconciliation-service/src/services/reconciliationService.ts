@@ -1,4 +1,4 @@
-import { KafkaManager } from "@backend/common";
+import { KafkaManager,kafkaManager } from "@backend/common";
 import { EachMessagePayload, KafkaConfig } from "kafkajs";
 import { TransactionSource, ReconciliationStatus, TransactionStatus, AlertSeverity } from "../../generated/prisma/enums";
 import { prisma } from '../../prisma/prisma'
@@ -22,15 +22,12 @@ interface PendingTransaction {
 }
 
 class ReconciliationService {
-    private kafkaManager: KafkaManager;
+    private kafkaManager = kafkaManager;
     private pendingTransactions: Map<string, PendingTransaction> = new Map();
 
     constructor() {
-        const kafkaConfig: KafkaConfig = {
-            clientId: 'reconciliation-service',
-            brokers: ['localhost:9092']
-        };
-        this.kafkaManager = new KafkaManager(kafkaConfig);
+       
+        this.kafkaManager = kafkaManager;
     }
 
     async initialize() {

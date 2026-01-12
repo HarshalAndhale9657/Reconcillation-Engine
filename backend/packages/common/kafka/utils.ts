@@ -6,7 +6,7 @@ const kafkaConfig: KafkaConfig = {
     clientId: process.env.KAFKA_CLIENT_ID || 'ingestion-service', 
     brokers: kafkaBrokers.split(',') 
 };
-const kafkaManager = new KafkaManager(kafkaConfig);
+export const kafkaManager = new KafkaManager(kafkaConfig);
 export const init = async () => {
     // Admin operations
     await kafkaManager.connectAdmin();
