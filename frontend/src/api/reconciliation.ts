@@ -6,7 +6,7 @@ import {
   mockAlerts,
 } from './mockData';
 
-const USE_MOCK_DATA = true; // 🔥 CHANGE TO false when backend is ready
+const USE_MOCK_DATA = false; // 🔥 CHANGE TO false when backend is ready
 
 export const fetchStats = async () => {
   if (USE_MOCK_DATA) return mockStats;
