@@ -15,3 +15,27 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     </nav>
   );
 }
+
+<style>{`
+  aside {
+    background: linear-gradient(180deg, #020617, #020617);
+  }
+
+  .nav {
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #cbd5f5;
+    text-decoration: none;
+    font-size: 15px;
+  }
+
+  .nav:hover {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .nav.active {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-weight: 600;
+  }
+`}</style>
