@@ -1,2 +1,7 @@
-export const INGESTION_BASE_URL = 'http://localhost:3002';
-export const RECON_BASE_URL = 'http://localhost:3001/api';
+
+
+export const INGESTION_BASE_URL =
+  import.meta.env.VITE_INGESTION_BASE_URL;
+
+export const RECON_BASE_URL =
+  import.meta.env.VITE_RECON_BASE_URL;
