@@ -5,16 +5,22 @@ import {
   getIngestionStatus,
 } from "../api/ingestion";
 
-type IngestionStatus = "running" | "stopped" | "unknown";
+type IngestionState = "running" | "stopped" | "unknown";
 
 export default function Ingestion() {
-  const [status, setStatus] = useState<IngestionStatus>("unknown");
+  const [status, setStatus] = useState<IngestionState>("unknown");
   const [loading, setLoading] = useState(false);
 
   const refreshStatus = async () => {
     try {
       const res = await getIngestionStatus();
-      setStatus(res?.status ?? "stopped");
+
+      
+      if (res?.isRunning === true) {
+        setStatus("running");
+      } else {
+        setStatus("stopped");
+      }
     } catch (err) {
       console.error("Failed to fetch ingestion status", err);
       setStatus("stopped");
@@ -46,33 +52,34 @@ export default function Ingestion() {
   }, []);
 
   return (
-    <div>
+    <div className="card">
       <h2>⚙️ Ingestion Control</h2>
 
-      <p>
+      <p style={{ marginTop: 12 }}>
         Status:{" "}
         <strong
           style={{
             color: status === "running" ? "green" : "red",
+            textTransform: "uppercase",
           }}
         >
-          {status.toUpperCase()}
+          {status}
         </strong>
       </p>
 
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 20 }}>
         <button
           className="primary"
-          onClick={handleStart}
           disabled={loading || status === "running"}
+          onClick={handleStart}
         >
           ▶ Start Ingestion
         </button>
 
         <button
           className="danger"
-          onClick={handleStop}
           disabled={loading || status === "stopped"}
+          onClick={handleStop}
           style={{ marginLeft: 12 }}
         >
           ■ Stop Ingestion
