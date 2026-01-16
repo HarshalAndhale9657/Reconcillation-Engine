@@ -10,15 +10,34 @@ type IngestionStatus = "running" | "stopped" | "unknown";
 export default function Ingestion() {
   const [status, setStatus] = useState<IngestionStatus>("unknown");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const refreshStatus = async () => {
     try {
       const res = await getIngestionStatus();
-      setStatus(res.status ?? "stopped");
+      setStatus(res?.status ?? "stopped");
     } catch (err) {
-      setStatus("unknown");
-      setError("Failed to fetch ingestion status");
+      console.error("Failed to fetch ingestion status", err);
+      setStatus("stopped");
+    }
+  };
+
+  const handleStart = async () => {
+    setLoading(true);
+    try {
+      await startIngestion();
+      await refreshStatus(); 
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStop = async () => {
+    setLoading(true);
+    try {
+      await stopIngestion();
+      await refreshStatus(); 
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,62 +45,28 @@ export default function Ingestion() {
     refreshStatus();
   }, []);
 
-  const handleStart = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      await startIngestion();          // ✅ backend call
-      await refreshStatus();           // ✅ update UI from backend
-    } catch (err) {
-      setError("Failed to start ingestion");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStop = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      await stopIngestion();           // ✅ backend call
-      await refreshStatus();           // ✅ update UI from backend
-    } catch (err) {
-      setError("Failed to stop ingestion");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="card">
+    <div>
       <h2>⚙️ Ingestion Control</h2>
 
-      <p style={{ marginTop: 8 }}>
+      <p>
         Status:{" "}
-        <span
-          className={`badge ${
-            status === "running" ? "running" : "stopped"
-          }`}
+        <strong
+          style={{
+            color: status === "running" ? "green" : "red",
+          }}
         >
           {status.toUpperCase()}
-        </span>
+        </strong>
       </p>
 
-      {error && (
-        <p style={{ color: "red", marginTop: 8 }}>
-          ❌ {error}
-        </p>
-      )}
-
-      <div style={{ marginTop: 20 }}>
+      <div style={{ marginTop: 16 }}>
         <button
           className="primary"
           onClick={handleStart}
           disabled={loading || status === "running"}
         >
-          ▶️ {loading && status !== "running" ? "Starting..." : "Start Ingestion"}
+          ▶ Start Ingestion
         </button>
 
         <button
@@ -90,7 +75,7 @@ export default function Ingestion() {
           disabled={loading || status === "stopped"}
           style={{ marginLeft: 12 }}
         >
-          ⏹ {loading && status === "running" ? "Stopping..." : "Stop Ingestion"}
+          ■ Stop Ingestion
         </button>
       </div>
     </div>
