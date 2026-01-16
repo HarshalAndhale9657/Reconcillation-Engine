@@ -4,7 +4,7 @@ import "./Sidebar.css";
 export default function Sidebar() {
   return (
     <aside className="sidebar">
-      <h2 className="logo">⚙️ Recon Engine</h2>
+      <h1 className="logo">⚙️ Reconciliation Engine</h1>
 
       <nav className="nav">
         <NavLink to="/" end className="nav-item">
