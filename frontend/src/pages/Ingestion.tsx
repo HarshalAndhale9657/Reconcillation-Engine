@@ -4,6 +4,7 @@ import {
   stopIngestion,
   getIngestionStatus,
 } from "../api/ingestion";
+import { Badge } from "../components/Table";
 
 type IngestionState = "running" | "stopped" | "unknown";
 
@@ -52,38 +53,54 @@ export default function Ingestion() {
   }, []);
 
   return (
-    <div className="card">
-      <h2>⚙️ Ingestion Control</h2>
+    <div className="max-w-xl space-y-4">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Ingestion Control
+        </h1>
+        <p className="mt-1 text-sm text-muted">
+          Start or stop ingesting transactions from APP, BANK, and GATEWAY.
+        </p>
+      </div>
 
-      <p style={{ marginTop: 12 }}>
-        Status:{" "}
-        <strong
-          style={{
-            color: status === "running" ? "green" : "red",
-            textTransform: "uppercase",
-          }}
-        >
-          {status}
-        </strong>
-      </p>
+      <div className="rounded-xl bg-card p-6 shadow-soft border border-border space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted">Status</span>
+          <Badge
+            tone={
+              status === "running"
+                ? "success"
+                : status === "stopped"
+                ? "danger"
+                : "neutral"
+            }
+          >
+            {status.toUpperCase()}
+          </Badge>
+        </div>
 
-      <div style={{ marginTop: 20 }}>
-        <button
-          className="primary"
-          disabled={loading || status === "running"}
-          onClick={handleStart}
-        >
-          ▶ Start Ingestion
-        </button>
+        <div className="flex gap-3">
+          <button
+            disabled={loading || status === "running"}
+            onClick={handleStart}
+            className="inline-flex flex-1 items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            Start ingestion
+          </button>
 
-        <button
-          className="danger"
-          disabled={loading || status === "stopped"}
-          onClick={handleStop}
-          style={{ marginLeft: 12 }}
-        >
-          ■ Stop Ingestion
-        </button>
+          <button
+            disabled={loading || status === "stopped"}
+            onClick={handleStop}
+            className="inline-flex flex-1 items-center justify-center rounded-lg bg-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-600 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            Stop ingestion
+          </button>
+        </div>
+
+        <p className="text-xs text-muted">
+          Changes may take a few seconds to propagate through Kafka and the
+          reconciliation service.
+        </p>
       </div>
     </div>
   );

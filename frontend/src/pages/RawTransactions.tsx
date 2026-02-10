@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchRawTransactions } from "../api/reconciliation";
+import { DataTable } from "../components/Table";
 
 export default function RawTransactions() {
   const [rows, setRows] = useState<any[]>([]);
@@ -27,35 +28,35 @@ export default function RawTransactions() {
 
   if (error)
     return (
-      <p style={{ color: "#666", marginTop: 20 }}>
+      <p className="mt-4 text-sm text-muted">
         {error}
       </p>
     );
 
   if (rows.length === 0)
-    return <p>No raw transactions available.</p>;
+    return (
+      <p className="mt-4 text-sm text-muted">No raw transactions available.</p>
+    );
 
   return (
-    <div>
-      <h1>Raw Transactions</h1>
-      <table style={{ width: "100%", marginTop: 20 }}>
-        <thead>
-          <tr>
-            <th>Transaction ID</th>
-            <th>Source</th>
-            <th>Received At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r, idx) => (
-            <tr key={idx}>
-              <td>{r.transactionId}</td>
-              <td>{r.source}</td>
-              <td>{r.receivedAt}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      title="Raw Transactions"
+      description="Low-level events as they arrive from each source."
+      columns={[
+        {
+          header: "Transaction ID",
+          accessor: (r: any) => r.transactionId,
+        },
+        {
+          header: "Source",
+          accessor: (r: any) => r.source,
+        },
+        {
+          header: "Received At",
+          accessor: (r: any) => r.receivedAt,
+        },
+      ]}
+      data={rows}
+    />
   );
 }

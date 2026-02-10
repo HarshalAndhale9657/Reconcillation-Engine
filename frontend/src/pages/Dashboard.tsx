@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchStats } from "../api/reconciliation";
 
-<h1>📊 Reconciliation Overview</h1>
-
-
 type Stats = {
   totalTransactions: number;
   matched: number;
@@ -59,30 +56,23 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
-      <h1 style={{ marginBottom: "20px" }}>Dashboard</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Reconciliation Overview
+        </h1>
+        <p className="mt-1 text-sm text-muted">
+          High-level health of your reconciliation pipeline.
+        </p>
+      </div>
 
       {error && (
-        <div
-          style={{
-            background: "#fff3cd",
-            color: "#856404",
-            padding: "10px",
-            borderRadius: "6px",
-            marginBottom: "20px",
-          }}
-        >
-          ⚠️ {error}
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {error}
         </div>
       )}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "20px",
-        }}
-      >
+      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
         <StatCard title="Total Transactions" value={stats.totalTransactions} />
         <StatCard title="Matched" value={stats.matched} />
         <StatCard title="Amount Mismatch" value={stats.amountMismatch} />
@@ -108,16 +98,11 @@ function StatCard({
   value: number | string;
 }) {
   return (
-    <div
-      style={{
-        background: "#ffffff",
-        borderRadius: "10px",
-        padding: "20px",
-        boxShadow: "0 10px 25px rgba(0,0,0,0.05)",
-      }}
-    >
-      <p style={{ color: "#6b7280", marginBottom: "8px" }}>{title}</p>
-      <h2 style={{ margin: 0 }}>{value}</h2>
+    <div className="rounded-xl bg-card p-4 shadow-soft">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted">
+        {title}
+      </p>
+      <p className="mt-2 text-2xl font-semibold text-text">{value}</p>
     </div>
   );
 }

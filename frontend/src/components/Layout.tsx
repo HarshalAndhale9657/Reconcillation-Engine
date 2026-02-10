@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
-import "./Layout.css";
 
 type LayoutProps = {
   children: ReactNode;
@@ -8,11 +7,19 @@ type LayoutProps = {
   activePage: string;
 };
 
-export default function Layout({ children, onNavigate, activePage }: LayoutProps) {
+export default function Layout({
+  children,
+  onNavigate,
+  activePage,
+}: LayoutProps) {
   return (
-    <div className="layout">
+    <div className="min-h-screen bg-bg text-text flex">
       <Sidebar onNavigate={onNavigate} activePage={activePage} />
-      <main className="content">{children}</main>
+      <main className="flex-1 bg-bg overflow-x-auto">
+        <div className="w-full max-w-6xl mx-auto px-6 py-8 space-y-6">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
