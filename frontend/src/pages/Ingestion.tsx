@@ -5,20 +5,45 @@ import {
   getIngestionStatus,
 } from "../api/ingestion";
 
-type IngestionStatus = "running" | "stopped" | "unknown";
+type IngestionState = "running" | "stopped" | "unknown";
 
 export default function Ingestion() {
-  const [status, setStatus] = useState<IngestionStatus>("unknown");
+  const [status, setStatus] = useState<IngestionState>("unknown");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const refreshStatus = async () => {
     try {
       const res = await getIngestionStatus();
-      setStatus(res.status ?? "stopped");
+
+      
+      if (res?.isRunning === true) {
+        setStatus("running");
+      } else {
+        setStatus("stopped");
+      }
     } catch (err) {
-      setStatus("unknown");
-      setError("Failed to fetch ingestion status");
+      console.error("Failed to fetch ingestion status", err);
+      setStatus("stopped");
+    }
+  };
+
+  const handleStart = async () => {
+    setLoading(true);
+    try {
+      await startIngestion();
+      await refreshStatus(); 
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStop = async () => {
+    setLoading(true);
+    try {
+      await stopIngestion();
+      await refreshStatus(); 
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,71 +51,38 @@ export default function Ingestion() {
     refreshStatus();
   }, []);
 
-  const handleStart = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      await startIngestion();          // ✅ backend call
-      await refreshStatus();           // ✅ update UI from backend
-    } catch (err) {
-      setError("Failed to start ingestion");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStop = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      await stopIngestion();           // ✅ backend call
-      await refreshStatus();           // ✅ update UI from backend
-    } catch (err) {
-      setError("Failed to stop ingestion");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="card">
       <h2>⚙️ Ingestion Control</h2>
 
-      <p style={{ marginTop: 8 }}>
+      <p style={{ marginTop: 12 }}>
         Status:{" "}
-        <span
-          className={`badge ${
-            status === "running" ? "running" : "stopped"
-          }`}
+        <strong
+          style={{
+            color: status === "running" ? "green" : "red",
+            textTransform: "uppercase",
+          }}
         >
-          {status.toUpperCase()}
-        </span>
+          {status}
+        </strong>
       </p>
-
-      {error && (
-        <p style={{ color: "red", marginTop: 8 }}>
-          ❌ {error}
-        </p>
-      )}
 
       <div style={{ marginTop: 20 }}>
         <button
           className="primary"
-          onClick={handleStart}
           disabled={loading || status === "running"}
+          onClick={handleStart}
         >
-          ▶️ {loading && status !== "running" ? "Starting..." : "Start Ingestion"}
+          ▶ Start Ingestion
         </button>
 
         <button
           className="danger"
-          onClick={handleStop}
           disabled={loading || status === "stopped"}
+          onClick={handleStop}
           style={{ marginLeft: 12 }}
         >
-          ⏹ {loading && status === "running" ? "Stopping..." : "Stop Ingestion"}
+          ■ Stop Ingestion
         </button>
       </div>
     </div>
