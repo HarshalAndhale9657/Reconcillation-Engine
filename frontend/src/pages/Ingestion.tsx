@@ -83,7 +83,7 @@ export default function Ingestion() {
           <button
             disabled={loading || status === "running"}
             onClick={handleStart}
-            className="inline-flex flex-1 items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="inline-flex bg-black flex-1 items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Start ingestion
           </button>
