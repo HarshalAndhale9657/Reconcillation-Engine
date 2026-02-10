@@ -9,14 +9,29 @@ export const logGatewayTx = async (): Promise<NodeJS.Timeout> => {
     }
     
     gatewayTxInterval = setInterval(async () => {
+        const scenario = count % 4;
+
+        let amount = 1000;
+        let status = "SUCCESS";
+
+        // Scenario 2: status mismatch from GATEWAY
+        if (scenario === 2) {
+            status = "FAILED";
+        }
+
+        // Scenario 3: amount mismatch from GATEWAY
+        if (scenario === 3) {
+            amount = 1100;
+        }
+
         const event = {
             transaction_id: `TX${count}`,
             source: "GATEWAY",
-            amount: 1000,
-            status: "PENDING",
+            amount,
+            status,
             timestamp: new Date().toISOString()
         };
-        await produceMessage(event, 'GATEWAY')
+        await produceMessage(event, 'GATEWAY');
         count++;
     }, 30000);
     

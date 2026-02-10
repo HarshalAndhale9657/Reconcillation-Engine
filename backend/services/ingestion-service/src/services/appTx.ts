@@ -9,14 +9,25 @@ export const logAppTx = async (): Promise<NodeJS.Timeout> => {
     }
     
     appTxInterval = setInterval(async () => {
+        const scenario = count % 4;
+
+        let amount = 1000;
+        let status = "SUCCESS";
+
+        // Scenario 3: introduce both amount and status mismatch from APP
+        if (scenario === 3) {
+            amount = 900;
+            status = "FAILED";
+        }
+
         const event = {
             transaction_id: `TX${count}`,
             source: "APP",
-            amount: 1000,
-            status: "PENDING",
+            amount,
+            status,
             timestamp: new Date().toISOString()
         };
-        await produceMessage(event, 'APP')
+        await produceMessage(event, 'APP');
         count++;
     }, 30000);
     

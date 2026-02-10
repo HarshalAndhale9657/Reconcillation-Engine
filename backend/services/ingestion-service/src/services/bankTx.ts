@@ -10,14 +10,24 @@ export const logBankTx = async (): Promise<NodeJS.Timeout> => {
     }
     
     bankTxInterval = setInterval(async () => {
+        const scenario = count % 4;
+
+        let amount = 1000;
+        let status = "SUCCESS";
+
+        // Scenario 1: introduce amount mismatch from BANK
+        if (scenario === 1) {
+            amount = 1100;
+        }
+
         const event = {
             transaction_id: `TX${count}`,
             source: "BANK",
-            amount: 1000,
-            status: "PENDING",
+            amount,
+            status,
             timestamp: new Date().toISOString()
         };
-        await produceMessage(event, 'BANK')
+        await produceMessage(event, 'BANK');
         count++;
     }, 30 * SEC);
     
