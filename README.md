@@ -31,9 +31,9 @@ The Reconciliation Engine addresses these challenges using:
 ```
 [1] INGESTION          [2] STREAMING          [3] RECONCILIATION        [4] STATE & AUDIT
 
-Raw transactions --> Kafka topics --> Reconciliation engine --> Reconciled state
-from external                           applies rules          stored in PostgreSQL
-sources                                 & validations
+Raw transactions -->     Kafka topics -->     Reconciliation engine -->   Reconciled state
+from external                                   applies rules              stored in PostgreSQL
+sources                                         & validations
 
 ```
 
