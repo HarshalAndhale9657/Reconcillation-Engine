@@ -224,7 +224,7 @@ PostgreSQL
 
 ✅ Deterministic reconciliation logic
 
-✅ Persistent reconciliation state
+✅ Persistent reconciliation state 
 
 ✅ Fully Dockerized environment
 
